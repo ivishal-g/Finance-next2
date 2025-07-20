@@ -63,7 +63,7 @@ const app = new Hono()
     "json",
     insertAccountSchema.pick({
       name: true,
-    }),
+    }).partial(),
   ),
   async (c) => {
     const auth = getAuth(c);

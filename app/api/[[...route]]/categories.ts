@@ -63,7 +63,7 @@ const app = new Hono()
     "json",
     insertCategorySchema.pick({
       name: true,
-    }),
+    }).partial(),
   ),
   async (c) => {
     const auth = getAuth(c);
@@ -78,7 +78,7 @@ const app = new Hono()
       return c.json({ error: "Unauthorized" }, 401);
     }
 
-    const categories = await prisma.categories.findFirst({
+    const category = await prisma.categories.findFirst({
   where: {
     id,
     userId: auth.userId,
@@ -86,7 +86,7 @@ const app = new Hono()
   },
 });
 
-if (!categories) {
+if (!category) {
   return c.json({ error: "Not found" }, 404);
 }
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 type Props = {
     href: string;
-    lable: string;
+    label: string;
     isActive?: boolean;
 }
 

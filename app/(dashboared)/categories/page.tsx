@@ -9,8 +9,8 @@ import { columns } from "./columns";
 import { DataTable } from "@/components/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNewCategory } from "@/features/categories/hooks/use-new-category";
-import { useGetCategory } from "@/features/categories/api/use-get-category";
 import { useBulkDeleteCategories } from "@/features/categories/api/use-bulk-delete-categories";
+import { useGetcategories } from "@/features/categories/api/use-get-categories";
 
 
 
@@ -19,7 +19,7 @@ import { useBulkDeleteCategories } from "@/features/categories/api/use-bulk-dele
 
 const CategoriesPage = () => {
     const newCatogory = useNewCategory();
-    const categoriesQuery = useGetCategory();
+    const categoriesQuery = useGetcategories();
     const categories = categoriesQuery.data || [];
     const deleteCategories = useBulkDeleteCategories();
     
@@ -61,7 +61,7 @@ const CategoriesPage = () => {
                 <CardContent>
                     <DataTable 
                         columns={columns} 
-                        data={categories} 
+                        data={categories}
                         filterKey="name"
                         onDelete={(row) => {
                             const ids = row.map((r) => r.original.id);
