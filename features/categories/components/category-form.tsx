@@ -1,4 +1,4 @@
-import { insertAccountSchema } from "@/lib/schemas/account";
+import { insertCategorySchema } from "@/lib/schemas/categories";
 import z from "zod";
 
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -13,7 +13,7 @@ import { Trash } from "lucide-react";
 
 
 
-const formSchema = insertAccountSchema.pick({
+const formSchema = insertCategorySchema.pick({
     name: true,
 });
 
@@ -31,7 +31,7 @@ type Props = {
 
 
 
-export const AccountForm = ({
+export const CategoryForm = ({
     id,
     defaultValues,
     onSubmit,
@@ -75,7 +75,7 @@ export const AccountForm = ({
                     )}
                 />
                 <Button className="w-full" disabled={disabled} >
-                    {id ? "Save changes" : "Create account"}
+                    {id ? "Save changes" : "Create category"}
                 </Button>
                 {!!id && (<Button 
                     type="button"
@@ -85,7 +85,7 @@ export const AccountForm = ({
                     variant={"outline"}
                 >
                     <Trash className="size-4 mr-2" />
-                    Delete account
+                    Delete category
                 </Button>)}
             </form>     
         </Form>

@@ -1,14 +1,14 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { AccountForm } from "./account-form";
+import { CategoryForm } from "./category-form";
 import { insertAccountSchema } from "@/lib/schemas/account";
 import z from "zod";
-import { useCreateAccount } from "@/features/accounts/api/use-create-account";
-import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
-import { useGetAccount } from "@/features/accounts/api/use-get-account";
 import { Loader2 } from "lucide-react";
-import { useEditAccount } from "../api/use-edit-account";
-import { useDeleteAccount } from "../api/use-delete-account";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useGetCategory } from "../api/use-get-category";
+import { useEditCategory } from "../api/use-edit-category";
+import { useDeleteCategory } from "../api/use-delete-category";
+import { useOpenCategory } from "../hooks/use-open-category";
+
 
 
  
@@ -22,15 +22,15 @@ type FormValues = z.input<typeof formSchema>;
 
 
 export const EditAccountSheet = () => {
-    const {isOpen, onClose, id} = useOpenAccount();
+    const {isOpen, onClose, id} = useOpenCategory();
 
     const [confirmDialag, confirm] = useConfirm(
         "Are you sure?",
         "You are about to delete this transaction"
     )
-    const accountQuery = useGetAccount(id);
-    const editMutation = useEditAccount(id);
-    const deleteMutation = useDeleteAccount(id);
+    const accountQuery = useGetCategory(id);
+    const editMutation = useEditCategory(id);
+    const deleteMutation = useDeleteCategory(id);
 
 
     const isPending = editMutation.isPending || deleteMutation.isPending;
@@ -80,7 +80,7 @@ export const EditAccountSheet = () => {
                         <Loader2 className="size-4 text-muted-foreground animate-spin"/>
                     </div>
                     ) : (
-                    <AccountForm  
+                    <CategoryForm  
                             id={id}
                             onSubmit={onSubmit} 
                             disabled={isPending}
