@@ -6,12 +6,12 @@ import { toast } from "sonner"
 
 
 
-type ResponseType = InferResponseType<typeof client.api.accounts["bulk-delete"]["$post"]>
-type RequestType = InferRequestType<typeof client.api.accounts["bulk-delete"]["$post"]>["json"];
+type ResponseType = InferResponseType<typeof client.api.categories.$post>
+type RequestType = InferRequestType<typeof client.api.categories.$post>["json"];
 
 
 
-export const useBulkDeleteAccounts = () => {
+export const useCreateCategory = () => {
     const queryClient = useQueryClient();
 
     const mutaiton = useMutation<
@@ -20,17 +20,17 @@ export const useBulkDeleteAccounts = () => {
         RequestType
     >({
         mutationFn: async (json) => {
-            const response = await client.api.accounts["bulk-delete"]["$post"]({ json });
+            const response = await client.api.categories.$post({ json });
             return await response.json();
         },
         onSuccess: () => {
-            toast.success("Account deleted");
+            toast.success("Category created");
             queryClient.invalidateQueries({
-                queryKey: ["accounts"] 
+                queryKey: ["categories"] 
             })
         },
         onError: () => {
-            toast.error("Failed to delete accounts")
+            toast.error("Failed to create Category")
         },  
     })
 
