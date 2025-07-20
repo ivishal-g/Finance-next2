@@ -1,6 +1,5 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { CategoryForm } from "./category-form";
-import { insertAccountSchema } from "@/lib/schemas/account";
 import z from "zod";
 import { Loader2 } from "lucide-react";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -8,12 +7,11 @@ import { useGetCategory } from "../api/use-get-category";
 import { useEditCategory } from "../api/use-edit-category";
 import { useDeleteCategory } from "../api/use-delete-category";
 import { useOpenCategory } from "../hooks/use-open-category";
+import { insertCategorySchema } from "@/lib/schemas/categories";
 
 
 
- 
-
-const formSchema = insertAccountSchema.pick({
+const formSchema = insertCategorySchema.pick({
     name:true,
 })
 
@@ -21,14 +19,15 @@ const formSchema = insertAccountSchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 
-export const EditAccountSheet = () => {
+export const EditCategorySheet = () => {
     const {isOpen, onClose, id} = useOpenCategory();
 
-    const [confirmDialag, confirm] = useConfirm(
+    const [ConfirmDialag, confirm] = useConfirm(
         "Are you sure?",
-        "You are about to delete this transaction"
-    )
-    const accountQuery = useGetCategory(id);
+        "You are about to delete this category."
+    );
+
+    const categoryQuery = useGetCategory(id);
     const editMutation = useEditCategory(id);
     const deleteMutation = useDeleteCategory(id);
 
@@ -55,8 +54,8 @@ export const EditAccountSheet = () => {
             })
         }
     }
-    const defaultValues = accountQuery.data ? {
-        name: accountQuery.data.name
+    const defaultValues = categoryQuery.data ? {
+        name: categoryQuery.data.name
     } : {
         name: "",
     };
@@ -65,14 +64,15 @@ export const EditAccountSheet = () => {
     
     return(
         <>
+        <ConfirmDialag/>
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>
-                        Edit Account
+                        Edit Category
                     </SheetTitle>
                     <SheetDescription>
-                        Edit an existing account
+                        Edit an existing category
                     </SheetDescription>
                 </SheetHeader>
                 {isPending ? (

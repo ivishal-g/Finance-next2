@@ -17,7 +17,7 @@ const formSchema = insertCategorySchema.pick({
 type FormValues = z.input<typeof formSchema>;
 
 
-export const NewAccountSheet = () => {
+export const NewCategorySheet = () => {
     const {isOpen, onClose} = useNewCategory();
 
     const mutation = useCreateCategory();
@@ -35,10 +35,10 @@ export const NewAccountSheet = () => {
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent>
                 <SheetTitle>
-                    New Account
+                    New Catogory
                 </SheetTitle>
                 <SheetDescription>
-                    create a new account to track your finances
+                    create a new category to track your finances
                 </SheetDescription>
                     <CategoryForm 
                         onSubmit={onSubmit} 
