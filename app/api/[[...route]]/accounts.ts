@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
 import { insertAccountSchema } from "@/lib/schemas/account";
+import z from "zod";
 
 const app = new Hono()
   .get(
@@ -28,7 +29,45 @@ const app = new Hono()
       return c.json({ data });
     }
   )
-  
+
+  .get(
+  "/:id",
+  zValidator("param", z.object({
+    id: z.string().optional(),
+  })),
+  clerkMiddleware(),
+  async (c) => {
+    const auth = getAuth(c);
+    const { id } = c.req.valid("param");
+
+    if (!id) {
+      return c.json({ error: "Missing id" }, 400);
+    }
+
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const data = await prisma.account.findFirst({
+      where: {
+        id,
+        userId: auth.userId,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (!data) {
+      return c.json({ error: "Account not found" }, 404);
+    }
+
+    return c.json({ data });
+  }
+)
+
+
  .post(
   "/",
   clerkMiddleware(),
@@ -58,6 +97,35 @@ const app = new Hono()
   }
 )
 
+  .post(
+    "/bulk-delete",
+    clerkMiddleware(),
+    zValidator(
+      "json",
+      z.object({
+        ids: z.array(z.string()),
+      }),
+    ),
+    async (c) => {
+    const auth = getAuth(c);
+    const values = c.req.valid("json");
+
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const data = await prisma.account.deleteMany({
+      where: {
+        id: {
+          in: values.ids,
+        },
+        userId: auth.userId, 
+      },
+    });
+
+    return c.json({ data });
+  }
+);
 
 
 export default app;
