@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-
+import { Toaster } from "sonner"
 import { Inter } from "next/font/google";
 
 import React from "react";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "@/provider/query-provider";
+import { SheetProvider } from "@/provider/sheet-provider";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,6 +28,8 @@ export default function RootLayout({ children }: QueryProviderProps) {
       <html lang="en">
         <body className={inter.className} >
         <QueryProvider> 
+          <SheetProvider/>
+          <Toaster/>
           {children}
         </QueryProvider>
         </body>

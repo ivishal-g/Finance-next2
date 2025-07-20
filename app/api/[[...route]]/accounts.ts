@@ -48,7 +48,7 @@ const app = new Hono()
 
     const data = await prisma.account.create({
       data: {
-        id: crypto.randomUUID(), // generate a new ID
+        id: crypto.randomUUID(), 
         name: values.name,
         userId: auth.userId,
       },
