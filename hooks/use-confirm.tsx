@@ -28,8 +28,8 @@ export const useConfirm = (
     })
 
     const handleclose = () => {
-        promise?.resolve(true)
-        handleclose();
+        promise?.resolve(true);
+        setPromise(null); 
     }
 
     const handlecancel = () => {
