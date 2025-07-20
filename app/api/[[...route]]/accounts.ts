@@ -34,7 +34,7 @@ const app = new Hono()
         return c.json({ error: "Unauthorized" }, 401);
       }
 
-      const data = await prisma.account.updateMany({
+      const data = await prisma.account.update({
         where: {
           id,
           userId: auth.userId,
@@ -50,7 +50,7 @@ const app = new Hono()
     }
   )
 
-  .delete(
+ .delete(
   "/:id",
   clerkMiddleware(),
   zValidator(
@@ -69,7 +69,7 @@ const app = new Hono()
     const auth = getAuth(c);
     const { id } = c.req.valid("param");
     const values = c.req.valid("json");
-
+ 
     if (!id) {
       return c.json({ error: "Missing id" }, 400);
     }
@@ -79,24 +79,25 @@ const app = new Hono()
     }
 
     const account = await prisma.account.findFirst({
-      where: {
-        id,
-        userId: auth.userId,
-        name: values.name,
-      },
-    });
+  where: {
+    id,
+    userId: auth.userId,
+    name: values.name,
+  },
+});
 
-    if (!account) {
-      return c.json({ error: "Not found" }, 404);
-    }
+if (!account) {
+  return c.json({ error: "Not found" }, 404);
+}
 
-    await prisma.account.delete({
-      where: {
-        id,
-      },
-    });
+const data = await prisma.account.delete({
+  where: {
+    id,
+  },
+});
 
-    return c.json({ data: { id } });
+return c.json({ data });
+
   }
 )
 

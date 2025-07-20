@@ -23,3 +23,11 @@ model Account {
   @@map("accounts") // optional: maps Prisma model to your actual table name
 }
 
+model Categories {
+  id String @id
+  plaidId String? @map("plaic_id")
+  name String 
+  userId String @map("user_id")
+
+  @@map("categories")
+}

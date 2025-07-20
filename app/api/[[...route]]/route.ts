@@ -1,7 +1,10 @@
 import { Hono }  from 'hono';
 import { handle } from 'hono/vercel';
-import accounts from './accounts';
 import { HTTPException } from 'hono/http-exception';
+
+import accounts from './accounts';
+import categories from './categories';
+
 
 export const runtime = "nodejs";
 
@@ -20,6 +23,7 @@ app.onError((err, c) => {
 
 const routes = app
     .route("/accounts", accounts)
+    .route("/categories", categories)
 
 
 
