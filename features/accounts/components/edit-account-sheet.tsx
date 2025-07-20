@@ -6,6 +6,9 @@ import { useCreateAccount } from "@/features/accounts/api/use-create-account";
 import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
 import { useGetAccount } from "@/features/accounts/api/use-get-account";
 import { Loader2 } from "lucide-react";
+import { useEditAccount } from "../api/use-edit-account";
+import { useDeleteAccount } from "../api/use-delete-account";
+import { useConfirm } from "@/hooks/use-confirm";
 
 
  
@@ -21,19 +24,37 @@ type FormValues = z.input<typeof formSchema>;
 export const EditAccountSheet = () => {
     const {isOpen, onClose, id} = useOpenAccount();
 
+    const [confirmDialag, confirm] = useConfirm(
+        "Are you sure?",
+        "You are about to delete this transaction"
+    )
     const accountQuery = useGetAccount(id);
-    const mutation = useCreateAccount();
+    const editMutation = useEditAccount(id);
+    const deleteMutation = useDeleteAccount(id);
 
-    const isLoading = accountQuery.isLoading;
+
+    const isPending = editMutation.isPending || deleteMutation.isPending;
+
 
     const onSubmit = (values: FormValues) => {
-        mutation.mutate(values, {
+        editMutation.mutate(values, {
             onSuccess: () => {
                 onClose();
             },
         });
     }
 
+    const onDelete = async () => {
+        const ok = await confirm();
+
+        if(ok){
+            deleteMutation.mutate(undefined, {
+                onSuccess: () => {
+                    onClose();
+                }
+            })
+        }
+    }
     const defaultValues = accountQuery.data ? {
         name: accountQuery.data.name
     } : {
@@ -43,6 +64,7 @@ export const EditAccountSheet = () => {
 
     
     return(
+        <>
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent>
                 <SheetHeader>
@@ -53,7 +75,7 @@ export const EditAccountSheet = () => {
                         Edit an existing account
                     </SheetDescription>
                 </SheetHeader>
-                {isLoading ? (
+                {isPending ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <Loader2 className="size-4 text-muted-foreground animate-spin"/>
                     </div>
@@ -61,11 +83,13 @@ export const EditAccountSheet = () => {
                     <AccountForm  
                             id={id}
                             onSubmit={onSubmit} 
-                            disabled={mutation.isPending}
+                            disabled={isPending}
                             defaultValues={defaultValues}
+                            onDelete={onDelete}
                         />)
                     }
             </SheetContent> 
         </Sheet>
+    </>
     )
 }

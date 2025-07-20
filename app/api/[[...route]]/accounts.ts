@@ -6,6 +6,101 @@ import { insertAccountSchema } from "@/lib/schemas/account";
 import z from "zod";
 
 const app = new Hono()
+  .patch(
+    "/:id",
+    clerkMiddleware(),
+    zValidator(
+      "param",
+      z.object({
+        id: z.string().optional(),
+      }),
+    ),
+    zValidator(
+      "json",
+      insertAccountSchema.pick({
+        name: true,
+      })
+    ),
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid("param");
+      const values = c.req.valid("json");
+
+      if (!id) {
+        return c.json({ error: "Missing id" }, 400);
+      }
+
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      const data = await prisma.account.updateMany({
+        where: {
+          id,
+          userId: auth.userId,
+        },
+        data: values,
+      });
+
+      if (!data) {
+        return c.json({ error: "Not found" }, 404);
+      }
+
+      return c.json({ data });
+    }
+  )
+
+  .delete(
+  "/:id",
+  clerkMiddleware(),
+  zValidator(
+    "param",
+    z.object({
+      id: z.string().optional(),
+    }),
+  ),
+  zValidator(
+    "json",
+    insertAccountSchema.pick({
+      name: true,
+    }),
+  ),
+  async (c) => {
+    const auth = getAuth(c);
+    const { id } = c.req.valid("param");
+    const values = c.req.valid("json");
+
+    if (!id) {
+      return c.json({ error: "Missing id" }, 400);
+    }
+
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    const account = await prisma.account.findFirst({
+      where: {
+        id,
+        userId: auth.userId,
+        name: values.name,
+      },
+    });
+
+    if (!account) {
+      return c.json({ error: "Not found" }, 404);
+    }
+
+    await prisma.account.delete({
+      where: {
+        id,
+      },
+    });
+
+    return c.json({ data: { id } });
+  }
+)
+
+
   .get(
     "/",
     clerkMiddleware(),
@@ -127,6 +222,5 @@ const app = new Hono()
   }
 );
 
-
-
+  
 export default app;
