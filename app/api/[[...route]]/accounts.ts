@@ -101,7 +101,6 @@ return c.json({ data });
   }
 )
 
-
   .get(
     "/",
     clerkMiddleware(),
