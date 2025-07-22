@@ -18,18 +18,18 @@ import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-
 
 
 const TransactionsPage = () => {
-    const newAccount = useNewTransaction();
-    const accountsQuery = useGetTransaction();
-    const accounts = accountsQuery.data || [];
-    const deleteAccounts = useBulkDeleteTransactions();
+    const newTransaction = useNewTransaction();
+    const transactionsQuery = useGetTransaction();
+    const transactions = transactionsQuery.data || [];
+    const deleteTransactions = useBulkDeleteTransactions();
     
 
     const isDisabled = 
-        accountsQuery.isLoading ||
-        accountsQuery.isFetching;
+        transactionsQuery.isLoading ||
+        transactionsQuery.isFetching;
 
 
-    if( accountsQuery.isLoading ) {
+    if( transactionsQuery.isLoading ) {
         return(
             <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24  " >
                 <Card className="border-none drop-shadow-sm">
@@ -53,7 +53,7 @@ const TransactionsPage = () => {
                     <CardTitle className="text-xl line-clamp-1">
                         Transaction History
                     </CardTitle>
-                    <Button onClick={newAccount.onOpen } size={"sm"}>
+                    <Button onClick={newTransaction.onOpen } size={"sm"}>
                         <Plus className="size-4 mr-2" />
                             Add new
                     </Button>
@@ -61,11 +61,11 @@ const TransactionsPage = () => {
                 <CardContent>
                     <DataTable 
                         columns={columns} 
-                        data={accounts} 
+                        data={transactions} 
                         filterKey="name"
                         onDelete={(row) => {
                             const ids = row.map((r) => r.original.id);
-                            deleteAccounts.mutate({ ids });
+                            deleteTransactions.mutate({ ids });
                         }}
                         disabled={isDisabled}
                     />

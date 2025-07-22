@@ -1,4 +1,3 @@
-import { insertAccountSchema } from "@/lib/schemas/account";
 import z from "zod";
 
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -14,6 +13,7 @@ import { Select } from "@/components/ui/select";
 import { DatePicker } from "@/components/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { AmountInput } from "@/components/amount-input";
+import { convertAmountToMiliunits } from "@/lib/utils";
 
 
 
@@ -65,8 +65,16 @@ export const TransactionForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        // onSubmit(values);
-    }
+        const amount = parseFloat(values.amount);
+        const amountInMiliunits = convertAmountToMiliunits(amount);
+
+        onSubmit({
+            ...values,
+            amount: amountInMiliunits,
+            categoryId: values.categoryId ?? undefined,
+            notes: values.notes ?? undefined,
+        });
+    };
 
     const handleDelete = () => {
         onDelete?.();
@@ -190,7 +198,7 @@ export const TransactionForm = ({
                     )}
                 />
                 <Button className="w-full" disabled={disabled} >
-                    {id ? "Save changes" : "Create account"}
+                    {id ? "Save changes" : "Create transaction"}
                 </Button>
                 {!!id && (<Button 
                     type="button"
@@ -200,7 +208,7 @@ export const TransactionForm = ({
                     variant={"outline"}
                 >
                     <Trash className="size-4 mr-2" />
-                    Delete account
+                    Delete transaction
                 </Button>)}
             </form>     
         </Form>
