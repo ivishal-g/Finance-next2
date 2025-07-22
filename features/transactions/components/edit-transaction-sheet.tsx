@@ -94,7 +94,7 @@ export const EditTransactionSheet = () => {
                 {isPending ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <Loader2 className="size-4 text-muted-foreground animate-spin"/>
-                    </div>
+                     </div>
                     ) : (
                     <TransactionForm  
                             id={id}
@@ -102,6 +102,7 @@ export const EditTransactionSheet = () => {
                             disabled={isPending}
                             onDelete={onDelete}
                             defaultValues={defaultValues}
+
                         />)
                     }
             </SheetContent> 

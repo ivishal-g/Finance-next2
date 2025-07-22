@@ -5,6 +5,8 @@ import { HTTPException } from 'hono/http-exception';
 import accounts from './accounts';
 import categories from './categories';
 import transactions from './transactions';
+import summary from './summary';
+
 
 
 export const runtime = "nodejs";
@@ -26,7 +28,7 @@ const routes = app
     .route("/transactions", transactions)
     .route("/accounts", accounts)
     .route("/categories", categories)
-
+    .route("/summary", summary)
 
 export const GET = handle(app);
 export const POST = handle(app) ; 
