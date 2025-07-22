@@ -1,5 +1,5 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { insertAccountSchema } from "@/lib/schemas/account";
+
 import z from "zod";
 import { Loader2 } from "lucide-react";
 
@@ -9,27 +9,29 @@ import { useGetTransaction } from "../api/use-get-transaction";
 import { useEditTransaction } from "../api/use-edit-transaction";
 import { useDeleteTransaction } from "../api/use-delete-transaction";
 import { useOpenTransaction } from "../hooks/use-open-transaction";
-import { AccountForm } from "./transaction-form";
+import { insertTransactionSchema } from "@/lib/schemas/transactions";
+import { TransactionForm } from "./transaction-form";
 
 
 
 
-const formSchema = insertAccountSchema.pick({
-    name:true,
+
+const formSchema = insertTransactionSchema.omit({
+    id: true,
 })
 
 
 type FormValues = z.input<typeof formSchema>;
 
 
-export const EditAccountSheet = () => {
+export const EditTransactionSheet = () => {
     const {isOpen, onClose, id} = useOpenTransaction();
 
     const [ConfirmDialag, confirm] = useConfirm(
         "Are you sure?",
-        "You are about to delete this account."
+        "You are about to delete this transaction."
     )
-    const accountQuery = useGetTransaction(id);
+    const transactionQuery = useGetTransaction(id);
     const editMutation = useEditTransaction(id);
     const deleteMutation = useDeleteTransaction(id);
 
@@ -56,14 +58,26 @@ export const EditAccountSheet = () => {
             })
         }
     }
-    const defaultValues = accountQuery.data ? {
-        name: accountQuery.data.name
+    const defaultValues = transactionQuery.data ? {
+        accountId: transactionQuery.data.accountId,
+        categoryId: transactionQuery.data.categoryId,
+        amout: transactionQuery.data.account.toString(),
+        date: transactionQuery.data.date 
+            ? new Date(transactionQuery.data.date)
+            : new Date(),
+        payee: transactionQuery.data.payee,
+        notes: transactionQuery.data.notes,
     } : {
-        name: "",
+        accountId: "",
+        categoryId: "",
+        amount: "",
+        date: "",
+        payee: "",
+        notes: "",
     };
 
 
-    
+     
     return(
         <>
         <ConfirmDialag/>
@@ -71,10 +85,10 @@ export const EditAccountSheet = () => {
             <SheetContent>
                 <SheetHeader>
                     <SheetTitle>
-                        Edit Account
+                        Edit Transaction
                     </SheetTitle>
                     <SheetDescription>
-                        Edit an existing account
+                        Edit an existing transaction
                     </SheetDescription>
                 </SheetHeader>
                 {isPending ? (
@@ -82,12 +96,12 @@ export const EditAccountSheet = () => {
                         <Loader2 className="size-4 text-muted-foreground animate-spin"/>
                     </div>
                     ) : (
-                    <AccountForm  
+                    <TransactionForm  
                             id={id}
-                            onSubmit={onSubmit} 
+                            onSubmit={onSubmit}
                             disabled={isPending}
-                            defaultValues={defaultValues}
                             onDelete={onDelete}
+                            defaultValues={defaultValues}
                         />)
                     }
             </SheetContent> 
