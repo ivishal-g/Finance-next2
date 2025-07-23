@@ -1,8 +1,9 @@
 import { VariantProps, cva } from "class-variance-authority";
 import { IconType } from "react-icons/lib";
-import { cn, formateCurrency } from "@/lib/utils";
+import { cn, formateCurrency, formatPercentage } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import CountUp from "react-countup";
+import { Skeleton } from "./ui/skeleton";
 
 const boxVariant = cva(
     "rounded-md shrink-0 p-3",
@@ -85,6 +86,32 @@ export const DataCard = ({
                         formattingFn={formateCurrency}
                     />
                 </h1>
+                <p className={cn(
+                    "text-muted-foreground text-sm line-clamp-1 ",
+                    percentageChange > 0 && "text-emerald-500",
+                    percentageChange < 0 && "text-rose-500",
+                )} > 
+                    {formatPercentage(percentageChange, {addPrefix: true })} from last period
+                </p>
+            </CardContent>
+        </Card>
+    )
+}
+
+
+export const DataCardLoading = () => {
+    return (
+        <Card className="border-none drop-shadow-sm h-[192px]">
+            <CardHeader className=" flex flex-row items-center justify-between gap-x-4 ">
+                <div className="space-y-2">
+                    <Skeleton className="h-6 w-24" />
+                    <Skeleton className="h-4 w-40" />
+                </div>
+                <Skeleton className="size-12" /> 
+            </CardHeader>
+            <CardContent className="" >
+                <Skeleton className="shrink-0 h-10 w-24 mb-2" />
+                <Skeleton  className="shrink-0 h-4 w-10"/>
             </CardContent>
         </Card>
     )
