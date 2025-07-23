@@ -6,9 +6,8 @@ import z from "zod";
 import { prisma } from "@/lib/prisma";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 
-const app = new Hono();
-
-app.get(
+const app = new Hono()
+  .get(
   "/",
   clerkMiddleware(),
   zValidator(
