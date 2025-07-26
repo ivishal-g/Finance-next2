@@ -257,7 +257,7 @@ console.log("🧾 ids received:", ids);
       const ownedIds = ownedTransactions.map((t) => t.id);
 
       // Step 2: Delete those transactions
-      const deleted = await prisma.transaction.deleteMany({
+      await prisma.transaction.deleteMany({
         where: {
           id: { in: ownedIds },
         },
@@ -367,9 +367,6 @@ console.log("🧾 ids received:", ids);
     }
   }
 )
-
-
-
 
 
 export default app;

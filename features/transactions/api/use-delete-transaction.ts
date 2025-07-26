@@ -8,14 +8,19 @@ type ResponseType = InferResponseType<typeof client.api.transactions[":id"]["$de
 export const useDeleteTransaction = (id?: string) => {
   const queryClient = useQueryClient();
 
+          console.log("Deleting transaction with ID:", id);
+
   const mutation = useMutation<ResponseType, Error>({
-    mutationFn: async () => {
-    const response = await client.api.transactions[":id"]["$delete"]({
-      param: { id },
-    });
- 
-      return await response.json();
-    },
+      mutationFn: async () => {
+        if (!id) {
+          throw new Error("Transaction id is required");
+        }
+        const response = await client.api.transactions[":id"]["$delete"]({
+          param: { id },
+        });
+
+        return await response.json();
+      },
     onSuccess: () => {
       toast.success("Transaction deleted");
       queryClient.invalidateQueries({ queryKey: ["transaction", { id }] });

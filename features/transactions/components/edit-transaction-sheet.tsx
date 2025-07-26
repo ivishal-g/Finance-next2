@@ -61,7 +61,7 @@ export const EditTransactionSheet = () => {
     const defaultValues = transactionQuery.data ? {
         accountId: transactionQuery.data.accountId,
         categoryId: transactionQuery.data.categoryId,
-        amout: transactionQuery.data.account.toString(),
+        amout: transactionQuery.data.amount.toString(),
         date: transactionQuery.data.date 
             ? new Date(transactionQuery.data.date)
             : new Date(),
