@@ -21,12 +21,13 @@ export const useGetTransactions = () => {
                 },
             })
 
-
+            
             if(!response.ok) {
                 throw new Error('Failed to fetch transactions');
             }
 
             const data = await response.json();
+                console.log("Fetched data:", data);
 
             return data;
         },

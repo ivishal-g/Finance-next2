@@ -15,7 +15,12 @@ import { Loader2 } from "lucide-react";
  
 
 const formSchema = insertTransactionSchema.pick({
-    id:true,
+    date: true,
+    accountId: true,
+    amount: true,
+    payee: true,
+    notes: true,
+    categoryId: true,
 })
 
 
