@@ -8,7 +8,7 @@ export const useGetTransaction = (id?:string) => {
         queryKey: ['transaction', { id }],
         queryFn: async () => {
             const response = await client.api.transactions[":id"].$get({
-                param: { id },
+                param: { id: id as string },
             });
 
             if(!response.ok) {

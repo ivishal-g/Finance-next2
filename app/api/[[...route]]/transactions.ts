@@ -4,24 +4,11 @@ import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { parse, subDays } from "date-fns";
-import { insertTransactionSchema } from "@/lib/schemas/transactions";
+import { createTransactionSchema } from "@/lib/schemas/transactions";
 import { nanoid } from "nanoid"; 
 
 
 
-
-// Format response for cleaner output
-      type TransactionWithRelations = {
-        id: string;
-        amount: number;
-        payee: string | null;
-        notes: string | null;
-        date: Date;
-        accountId: string;
-        account: { name: string };
-        categoryId: string | null;
-        category: { name: string } | null;
-      };
 
 
 
@@ -91,7 +78,7 @@ const app = new Hono()
 
         
 
-        const formatted = transactions.map((t: TransactionWithRelations) => ({
+        const formatted = transactions.map((t) => ({
           id: t.id,
           amount: t.amount,
           payee: t.payee,
@@ -110,7 +97,6 @@ const app = new Hono()
       }
     }
   )
-
 
   .get(
   "/:id",
@@ -165,7 +151,7 @@ const app = new Hono()
     clerkMiddleware(),
     zValidator(
       "json",
-      insertTransactionSchema.omit({ id: true })
+      createTransactionSchema
     ),
     async (c) => {
       const auth = getAuth(c);
@@ -199,7 +185,7 @@ const app = new Hono()
     clerkMiddleware(),
     zValidator(
       "json",
-      z.array(insertTransactionSchema.omit({ id: true }))
+      z.array(createTransactionSchema)
     ),
     async (c) => {
       const auth = getAuth(c);
@@ -241,10 +227,18 @@ const app = new Hono()
   async (c) => {
     const auth = getAuth(c);
     const { ids } = c.req.valid("json");
+console.log("🧾 ids received:", ids);
+
+
+
+
+    console.log(ids);
 
     if (!auth?.userId) {
       return c.json({ error: "Unauthorized" }, 401);
     }
+
+    console.log(auth.userId)
 
     try {
       // Step 1: Verify ownership and get valid transaction IDs
@@ -288,7 +282,7 @@ const app = new Hono()
     ),
     zValidator(
       "json",
-      insertTransactionSchema.omit({ id: true })
+      createTransactionSchema
     ),
     async (c) => {
       const auth = getAuth(c);

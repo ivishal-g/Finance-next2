@@ -14,7 +14,7 @@ import { AccountColumn } from "./account-column"
 import { CategoryColumn } from "./category-column"
 
 
-export type ResponseType = InferResponseType<typeof client.api.transactions.$get,200>["data"][0];
+export type ResponseType = InferResponseType<typeof client.api.transactions.$get,200>[0];
 
 
 export const columns: ColumnDef<ResponseType>[] = [ 
@@ -144,6 +144,7 @@ export const columns: ColumnDef<ResponseType>[] = [
     cell: ( { row}) => {
       return (
        <AccountColumn
+          id={row.original.id}
           account={row.original.account}
           accountId={row.original.accountId}
         />

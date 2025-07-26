@@ -20,7 +20,7 @@ import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-
 const TransactionsPage = () => {
     const newTransaction = useNewTransaction();
     const transactionsQuery = useGetTransaction();
-    const transactions = transactionsQuery.data || [];
+    const transactions = Array.isArray(transactionsQuery.data) ? transactionsQuery.data : (transactionsQuery.data ? [transactionsQuery.data] : []);
     const deleteTransactions = useBulkDeleteTransactions();
     
 

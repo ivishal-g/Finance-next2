@@ -5,9 +5,11 @@ export const insertTransactionSchema = z.object({
   amount: z.number().int(),
   payee: z.string(),
   notes: z.string().optional(),
-  date: z.coerce.date(), // or z.string() if you're receiving ISO string
+  date: z.coerce.date(),
   accountId: z.string(),
   categoryId: z.string().optional(),
 });
 
-export type InsertTransactionSchema = z.infer<typeof insertTransactionSchema>;
+export const createTransactionSchema = insertTransactionSchema.omit({
+  id: true,
+});
