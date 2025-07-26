@@ -61,7 +61,7 @@ export const EditTransactionSheet = () => {
     const defaultValues = transactionQuery.data ? {
         accountId: transactionQuery.data.accountId,
         categoryId: transactionQuery.data.categoryId,
-        amout: transactionQuery.data.amount.toString(),
+        amount: transactionQuery.data.amount.toString(),
         date: transactionQuery.data.date 
             ? new Date(transactionQuery.data.date)
             : new Date(),
@@ -102,7 +102,10 @@ export const EditTransactionSheet = () => {
                             disabled={isPending}
                             onDelete={onDelete}
                             defaultValues={defaultValues}
-
+                            accountOptions={[]} // TODO: Replace with actual account options
+                            categoryOptions={[]} // TODO: Replace with actual category options
+                            onCreateAccount={() => {}} // TODO: Replace with actual handler
+                            onCreateCategory={() => {}} // TODO: Replace with actual handler
                         />)
                     }
             </SheetContent> 

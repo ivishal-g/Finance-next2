@@ -8,8 +8,6 @@ type ResponseType = InferResponseType<typeof client.api.transactions[":id"]["$de
 export const useDeleteTransaction = (id?: string) => {
   const queryClient = useQueryClient();
 
-          console.log("Deleting transaction with ID:", id);
-
   const mutation = useMutation<ResponseType, Error>({
       mutationFn: async () => {
         if (!id) {

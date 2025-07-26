@@ -19,6 +19,9 @@ export const useEditTransaction = (id?:string) => {
         RequestType
     >({
         mutationFn: async (json) => {
+            if (!id) {
+                throw new Error("Transaction id is required");
+            }
             const response = await client.api.transactions[":id"]["$patch"]({ 
                 param:{ id },
                 json,

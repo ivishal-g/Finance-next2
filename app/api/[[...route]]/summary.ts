@@ -181,8 +181,14 @@ const app = new Hono()
     );
 
 
+    const mappedActiveDays = activeDays.map((d) => ({
+      date: d.date,
+      income: d._sum.amount && d._sum.amount >= 0 ? d._sum.amount : 0,
+      expenses: d._sum.amount && d._sum.amount < 0 ? d._sum.amount : 0,
+    }));
+
     const days = fillMissingDays(
-      activeDays,
+      mappedActiveDays,
       startDate,
       endDate
     )
