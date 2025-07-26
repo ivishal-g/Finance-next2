@@ -12,9 +12,8 @@ export const useDeleteTransaction = (id?: string) => {
     mutationFn: async () => {
     const response = await client.api.transactions[":id"]["$delete"]({
       param: { id },
-      json: {},
     });
-
+ 
       return await response.json();
     },
     onSuccess: () => {

@@ -1,197 +1,381 @@
-// lib/routes/transactions.ts
-
 import { Hono } from "hono";
 import { prisma } from "@/lib/prisma";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
-import { insertTransactionSchema } from "@/lib/schemas/transactions";
 import { z } from "zod";
 import { parse, subDays } from "date-fns";
+import { insertTransactionSchema } from "@/lib/schemas/transactions";
+import { nanoid } from "nanoid"; 
+
+
+
+
+// Format response for cleaner output
+      type TransactionWithRelations = {
+        id: string;
+        amount: number;
+        payee: string | null;
+        notes: string | null;
+        date: Date;
+        accountId: string;
+        account: { name: string };
+        categoryId: string | null;
+        category: { name: string } | null;
+      };
+
+
 
 const app = new Hono()
-// GET: List transactions with optional filters
   .get(
-      "/",
-      clerkMiddleware(),
-      zValidator(
-        "query",
-        z.object({
-          from: z.string().optional(),
-          to: z.string().optional(),
-          accountId: z.string().optional(),
-        })
-      ),
-      async (c) => {
-        const auth = getAuth(c);
-        const { from, to, accountId } = c.req.valid("query");
+    "/",
+    zValidator(
+      "query",
+      z.object({
+        from: z.string().optional(),
+        to: z.string().optional(),
+        accountId: z.string().optional(),
+      })
+    ),
+    clerkMiddleware(),
+    async (c) => {
+      const auth = getAuth(c);
+      const { from, to, accountId } = c.req.valid("query");
 
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
 
-        if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
+      const defaultTo = new Date();
+      const defaultFrom = subDays(defaultTo, 30);
 
-        const defaultTo = new Date();
-        const defaultFrom = subDays(defaultTo, 30);
+      const startDate = from
+        ? parse(from, "yyyy-MM-dd", new Date())
+        : defaultFrom;
+      const endDate = to ? parse(to, "yyyy-MM-dd", new Date()) : defaultTo;
 
-        const startDate = from ? parse(from, "yyyy-MM-dd", new Date()) : defaultFrom;
-        const endDate = to ? parse(to, "yyyy-MM-dd", new Date()) : defaultTo;
-
-        const data = await prisma.transaction.findMany({
+      try {
+        const transactions = await prisma.transaction.findMany({
           where: {
-            account: {
-              userId: auth.userId,
-              ...(accountId && { id: accountId }),
-            },
             date: {
               gte: startDate,
               lte: endDate,
             },
+            accountId: accountId || undefined,
+            account: {
+              userId: auth.userId,
+            },
           },
-          orderBy: { date: "desc" },
-          include: {
-            account: { select: { name: true } },
-            category: { select: { name: true } },
+          orderBy: {
+            date: "desc",
+          },
+          select: {
+            id: true,
+            amount: true,
+            payee: true,
+            notes: true,
+            date: true,
+            accountId: true,
+            account: {
+              select: {
+                name: true,
+              },
+            },
+            categoryId: true,
+            category: {
+              select: {
+                name: true,
+              },
+            },
           },
         });
 
+        
 
-        return c.json({ data });
+        const formatted = transactions.map((t: TransactionWithRelations) => ({
+          id: t.id,
+          amount: t.amount,
+          payee: t.payee,
+          notes: t.notes,
+          date: t.date,
+          accountId: t.accountId,
+          account: t.account.name,
+          categoryId: t.categoryId,
+          category: t.category?.name || null,
+        }));
+
+        return c.json(formatted);
+      } catch (err) {
+        console.error("❌ Prisma error:", err);
+        return c.json({ error: "Internal Server Error" }, 500);
       }
-    )
+    }
+  )
+
+
+  .get(
+  "/:id",
+  zValidator(
+    "param",
+    z.object({
+      id: z.string(),
+    })
+  ),
+  clerkMiddleware(),
+  async (c) => {
+    const auth = getAuth(c);
+    const { id } = c.req.valid("param");
+
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    try {
+      const transaction = await prisma.transaction.findFirst({
+        where: {
+          id,
+          account: {
+            userId: auth.userId,
+          },
+        },
+        select: {
+          id: true,
+          date: true,
+          categoryId: true,
+          payee: true,
+          amount: true,
+          notes: true,
+          accountId: true,
+        },
+      });
+
+      if (!transaction) {
+        return c.json({ error: "Not found" }, 404);
+      }
+
+      return c.json({ data: transaction });
+    } catch (error) {
+      console.error("❌ Prisma error:", error);
+      return c.json({ error: "Internal Server Error" }, 500);
+    }
+  }
+  )
+
+  .post(
+    "/",
+    clerkMiddleware(),
+    zValidator(
+      "json",
+      insertTransactionSchema.omit({ id: true })
+    ),
+    async (c) => {
+      const auth = getAuth(c);
+      const values = c.req.valid("json");
+
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      try {
+        const data = await prisma.transaction.create({
+          data: {
+            amount: values.amount,
+            payee: values.payee,
+            notes: values.notes,
+            date: values.date,
+            accountId: values.accountId, 
+            categoryId: values.categoryId,
+          },
+        });
+        return c.json({ data });
+      } catch (err) {
+        console.error("❌ Error creating transaction:", err);
+        return c.json({ error: "Internal Server Error" }, 500);
+      }
+    }
+  )
+
+  .post(
+    "/bulk-create",
+    clerkMiddleware(),
+    zValidator(
+      "json",
+      z.array(insertTransactionSchema.omit({ id: true }))
+    ),
+    async (c) => {
+      const auth = getAuth(c);
+      const values = c.req.valid("json");
+
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      try {
+        const payload = values.map((value) => ({
+          id: nanoid(), // or use any custom ID logic
+          ...value,
+        }));
+
+        await prisma.transaction.createMany({
+          data: payload,
+          skipDuplicates: true, // optional
+        });
+
+        // Optionally return the generated IDs
+        return c.json({ data: payload.map((t) => t.id) });
+      } catch (err) {
+        console.error("❌ Bulk create error:", err);
+        return c.json({ error: "Internal Server Error" }, 500);
+      }
+    }
+  )
+
+  .post(
+  "/bulk-delete",
+  clerkMiddleware(),
+  zValidator(
+    "json",
+    z.object({
+      ids: z.array(z.string()),
+    })
+  ),
+  async (c) => {
+    const auth = getAuth(c);
+    const { ids } = c.req.valid("json");
+
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    try {
+      // Step 1: Verify ownership and get valid transaction IDs
+      const ownedTransactions = await prisma.transaction.findMany({
+        where: {
+          id: { in: ids },
+          account: {
+            userId: auth.userId,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const ownedIds = ownedTransactions.map((t) => t.id);
+
+      // Step 2: Delete those transactions
+      const deleted = await prisma.transaction.deleteMany({
+        where: {
+          id: { in: ownedIds },
+        },
+      });
+
+      return c.json({ data: ownedIds });
+    } catch (error) {
+      console.error("❌ Bulk delete error:", error);
+      return c.json({ error: "Internal Server Error" }, 500);
+    }
+  }
+  )
 
   .patch(
     "/:id",
     clerkMiddleware(),
-    zValidator("param", z.object({ id: z.string() })),
-    zValidator("json", insertTransactionSchema.partial()),
+    zValidator(
+      "param",
+      z.object({
+        id: z.string(),
+      })
+    ),
+    zValidator(
+      "json",
+      insertTransactionSchema.omit({ id: true })
+    ),
     async (c) => {
       const auth = getAuth(c);
       const { id } = c.req.valid("param");
       const values = c.req.valid("json");
 
-      if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
+      if (!auth?.userId) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
 
-      const data = await prisma.transaction.update({
-        where: {
-          id,
-          account: { userId: auth.userId },
-        },
-        data: values,
-        include: {
-          account: { select: { name: true } },
-          category: { select: { name: true } },
-        },
-      }).catch(() => null);
+      try {
+        // Step 1: Check if the transaction belongs to the user
+        const existing = await prisma.transaction.findFirst({
+          where: {
+            id,
+            account: {
+              userId: auth.userId,
+            },
+          },
+        });
 
-      if (!data) return c.json({ error: "Transaction not found or unauthorized" }, 404);
+        if (!existing) {
+          return c.json({ error: "Not found or unauthorized" }, 404);
+        }
 
-      return c.json({ data });
+        // Step 2: Update the transaction
+        const updated = await prisma.transaction.update({
+          where: { id },
+          data: values,
+        });
+
+        return c.json({ data: updated });
+      } catch (error) {
+        console.error("❌ Error updating transaction:", error);
+        return c.json({ error: "Internal Server Error" }, 500);
+      }
     }
   )
 
-  // DELETE: Delete transaction by id
   .delete(
-    "/:id",
-    clerkMiddleware(),
-    zValidator("param", z.object({ id: z.string() })),
-    async (c) => {
-      const auth = getAuth(c);
-      const { id } = c.req.valid("param");
+  "/:id",
+  clerkMiddleware(),
+  zValidator(
+    "param",
+    z.object({
+      id: z.string(),
+    })
+  ),
+  async (c) => {
+    const auth = getAuth(c);
+    const { id } = c.req.valid("param");
 
-      if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
+    if (!auth?.userId) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
 
-      const existing = await prisma.transaction.findFirst({
+    try {
+      // Step 1: Verify transaction belongs to the user
+      const transaction = await prisma.transaction.findFirst({
         where: {
           id,
-          account: { userId: auth.userId },
+          account: {
+            userId: auth.userId,
+          },
         },
+        select: { id: true },
       });
 
-      if (!existing) return c.json({ error: "Transaction not found or unauthorized" }, 404);
+      if (!transaction) {
+        return c.json({ error: "Not found or unauthorized" }, 404);
+      }
 
-      const data = await prisma.transaction.delete({ where: { id } });
+      // Step 2: Delete transaction
+      await prisma.transaction.delete({
+        where: { id },
+      });
 
-      return c.json({ data });
+      return c.json({ data: { id } });
+    } catch (error) {
+      console.error("❌ Delete error:", error);
+      return c.json({ error: "Internal Server Error" }, 500);
     }
-  )
+  }
+)
 
-  // GET: Get transaction by id
-  .get(
-    "/:id",
-    clerkMiddleware(),
-    zValidator("param", z.object({ id: z.string() })),
-    async (c) => {
-      const auth = getAuth(c);
-      const { id } = c.req.valid("param");
 
-      if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
 
-      const data = await prisma.transaction.findFirst({
-        where: {
-          id,
-          account: { userId: auth.userId },
-        },
-        include: {
-          account: { select: { name: true } },
-          category: { select: { name: true } },
-        },
-      });
 
-      if (!data) return c.json({ error: "Transaction not found" }, 404);
-
-      return c.json({ data });
-    }
-  )
-
-  // POST: Create a transaction
-  .post(
-    "/",
-    clerkMiddleware(),
-    zValidator("json", insertTransactionSchema.omit({ id: true })),
-    async (c) => {
-      const auth = getAuth(c);
-      const values = c.req.valid("json");
-
-      if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
-
-      const account = await prisma.account.findFirst({
-        where: {
-          id: values.accountId,
-          userId: auth.userId,
-        },
-      });
-
-      if (!account) return c.json({ error: "Invalid account access" }, 403);
-
-      const data = await prisma.transaction.create({
-        data: {
-          ...values,
-          id: crypto.randomUUID(),
-        },
-      });
-
-      return c.json({ data });
-    }
-  )
-
-  // POST: Bulk delete transactions
-  .post(
-    "/bulk-delete",
-    clerkMiddleware(),
-    zValidator("json", z.object({ ids: z.array(z.string()) })),
-    async (c) => {
-      const auth = getAuth(c);
-      const { ids } = c.req.valid("json");
-
-      if (!auth?.userId) return c.json({ error: "Unauthorized" }, 401);
-
-      const data = await prisma.transaction.deleteMany({
-        where: {
-          id: { in: ids },
-          account: { userId: auth.userId },
-        },
-      });
-
-      return c.json({ data });
-    }
-  )
 
 export default app;

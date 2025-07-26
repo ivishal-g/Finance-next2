@@ -76,14 +76,7 @@ export function DataTable<TData, TValue>({
     <div>
       <ConfirmDialog/>
       <div className="flex items-center py-4">
-        <Input
-          placeholder={`Filter ${filterKey}...`}
-          value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
           <Button
             size={"sm"}

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { prisma } from "@/lib/prisma"; 
+import  { prisma }  from "@/lib/prisma"; 
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
 import { insertCategorySchema } from "@/lib/schemas/categories";

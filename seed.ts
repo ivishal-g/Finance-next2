@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { subDays, eachDayOfInterval, format } from "date-fns";
-import { prisma } from "@/lib/prisma";
+import  prisma  from "@/lib/prisma";
 import { convertAmountToMiliunits } from "@/lib/utils";
 
 config({ path: ".env" });

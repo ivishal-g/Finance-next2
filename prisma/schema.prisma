@@ -31,7 +31,7 @@ model Categories {
 }
 
 model Transaction {
-  id         String      @id
+  id         String      @id @default(cuid()) // ✅ FIXED
   amount     Int
   payee      String
   notes      String?
@@ -44,3 +44,4 @@ model Transaction {
 
   @@map("transactions")
 }
+
