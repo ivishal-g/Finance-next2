@@ -32,7 +32,7 @@ export const Chart = ( { data = [] }: Props) => {
                             </p>
                         </div>
                     ): (
-                        <AreaVariant data={data} />
+                        <AreaVariant data={data}/>
                     )}
                 </CardContent>
             </Card>
