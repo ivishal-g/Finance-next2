@@ -23,7 +23,7 @@ export const useGetSummary = () => {
             })
 
 
-            if(!response.ok) {
+            if(!response.ok) {  
                 throw new Error('Failed to fetch transactions');
             }
 
