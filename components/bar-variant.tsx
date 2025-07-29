@@ -7,7 +7,7 @@ import {
     XAxis,
     BarChart
 } from "recharts"
-import { CustomTooltip } from "./custom-tooltip";
+import { CustomTooltip } from "@/components/custom-tooltip";
 
 type Props = {
     data: {
@@ -27,7 +27,7 @@ export const BarVariant = ( { data }: Props ) => {
                     axisLine={false}
                     tickLine={false}
                     dataKey="date"
-                    tickFormatter={(value) => format(value, "dd MMM")}
+                    tickFormatter={(value) => format(new Date(value), "dd MMM")}
                     style={{ fontSize: "12px" }}
                     tickMargin={16}
                 />   

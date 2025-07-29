@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 
 export const CustomTooltip = ({ active, payload }:any ) => {
 
-  const date = payload[0]?.payload?.date;
+  const date = payload[0]?.payload.date;
   const income = payload[0]?.value;
   const expenses = payload[1]?.value;
 

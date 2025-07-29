@@ -4,6 +4,14 @@ import { AreaVariant } from "./area-variant";
 import { BarVariant } from "./bar-variant";
 import { LineVariant } from "./line-variant";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { AreaChart } from "recharts";
 
 
 type Props = {
@@ -20,8 +28,6 @@ export const Chart = ({ data = [] }: Props) => {
     const [charyType, setChartType] = useState("area");
 
     const onTypeChange = (type: string) => {
-
-
         setChartType(type);
     }
 
@@ -31,8 +37,23 @@ export const Chart = ({ data = [] }: Props) => {
                     <CardTitle className="text-xl line-clamp-1">    
                         Transactions
                     </CardTitle>
+                    <Select
+                        defaultValue={charyType}
+                        onValueChange={onTypeChange}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Chart type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <div>
+                                <AreaChart/>
+                                <p className="" >
+                                    Area chart
+                                </p>
+                            </div>
+                        </SelectContent>
+                    </Select>
                 </CardHeader>
-
                 <CardContent>
                     {data.length === 0 ? (
                         <div className="flex flex-col gap-y-4 items-center justify-center h-[350px] w-full " >
@@ -42,8 +63,8 @@ export const Chart = ({ data = [] }: Props) => {
                             </p>
                         </div>
                     ): (
-                        <AreaVariant data={data}/>
-                        // <BarVariant data={data}/>
+                        // <AreaVariant data={data}/>
+                        <BarVariant data={data}/>
                         // <LineVariant data={data}/>
                     )}
                 </CardContent>
