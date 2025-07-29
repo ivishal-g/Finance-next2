@@ -4,11 +4,11 @@ import { Separator } from "@/components/ui/separator";
 
 
 
-export const CustomTooltip = ({ active, pay }:any ) => {
+export const CustomTooltip = ({ active, payload }:any ) => {
 
-  const date = pay[0]?.pay?.date;
-  const income = pay[0]?.value;
-  const expenses = pay[1]?.value;
+  const date = payload[0]?.payload?.date;
+  const income = payload[0]?.value;
+  const expenses = payload[1]?.value;
 
   return (
     <div className="rounded-sm bg-white shadow-sm border overflow-hidden">
