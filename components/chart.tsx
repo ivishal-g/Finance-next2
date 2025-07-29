@@ -1,7 +1,9 @@
 import { FileSearch } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { AreaVariant } from "./area-variant";
-
+import { BarVariant } from "./bar-variant";
+import { LineVariant } from "./line-variant";
+import { useState } from "react";
 
 
 type Props = {
@@ -15,10 +17,18 @@ type Props = {
 
 export const Chart = ({ data = [] }: Props) => {
 
+    const [charyType, setChartType] = useState("area");
+
+    const onTypeChange = (type: string) => {
+
+
+        setChartType(type);
+    }
+
     return (
             <Card className="border-none drop-shadow-sm">
                 <CardHeader className="flex space-y-2 lg:space-y-0 lg:flex-row lg:items-center justify-between ">
-                    <CardTitle className="text-xl line-clamp-1">
+                    <CardTitle className="text-xl line-clamp-1">    
                         Transactions
                     </CardTitle>
                 </CardHeader>
@@ -33,6 +43,8 @@ export const Chart = ({ data = [] }: Props) => {
                         </div>
                     ): (
                         <AreaVariant data={data}/>
+                        // <BarVariant data={data}/>
+                        // <LineVariant data={data}/>
                     )}
                 </CardContent>
             </Card>

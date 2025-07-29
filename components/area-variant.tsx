@@ -1,6 +1,15 @@
 
 import { format } from "date-fns";
-import {Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis} from "recharts"
+import {
+  Area, 
+  AreaChart, 
+  Tooltip, 
+  CartesianGrid, 
+  ResponsiveContainer, 
+  XAxis
+} from "recharts"
+import { CustomTooltip } from "@/components/custom-tooltip";
+
 
 type Props = {
     data: {
@@ -9,6 +18,7 @@ type Props = {
         expenses: number;
     }[];
 };
+
 
 
 export const AreaVariant = ({ data } : Props) => {
@@ -26,8 +36,6 @@ export const AreaVariant = ({ data } : Props) => {
                             <stop offset="98%" stopColor="#f43f5e" stopOpacity={0} />
                         </linearGradient>
                     </defs>
-                      
-
                     <XAxis 
                         axisLine={false}
                         tickLine={false}
@@ -36,6 +44,7 @@ export const AreaVariant = ({ data } : Props) => {
                         style={{ fontSize: "12px" }}
                         tickMargin={16}
                     />
+                      <Tooltip content={<CustomTooltip />} />
                     <Area
                         type="monotone"
                         dataKey="income"
