@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { subDays, eachDayOfInterval, format } from "date-fns";
-import  {prisma}  from "@/lib/prisma";
+import { prisma }  from "@/lib/prisma";
 import { convertAmountToMiliunits } from "@/lib/utils";
 
 config({ path: ".env" });
@@ -78,7 +78,7 @@ const generateTransactionForDay = (day: Date) => {
 
 const generateTransactions = () => {
   const days = eachDayOfInterval({ start: defaultFrom, end: defaultTo });
-  days.forEach((day) => generateTransactionForDay(day));
+  days.forEach(day => generateTransactionForDay(day));
 };
 
 generateTransactions();
