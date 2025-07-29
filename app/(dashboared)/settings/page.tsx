@@ -1,11 +1,12 @@
+import { Suspense } from "react"
 
 
 
 const SettingsPage = () => {
 
-    return <div>
+    return <Suspense>
         Settings page 
-    </div>
+    </Suspense>
 }
 
 

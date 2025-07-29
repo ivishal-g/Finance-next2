@@ -14,6 +14,7 @@ import { DatePicker } from "@/components/date-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { AmountInput } from "@/components/amount-input";
 import { convertAmountToMiliunits } from "@/lib/utils";
+import { CustomSelect } from "@/components/select";
 
 
 
@@ -109,7 +110,7 @@ export const TransactionForm = ({
                                 Account
                             </FormLabel>
                             <FormControl>
-                                <Select
+                                <CustomSelect
                                     placeholder="Select an account"
                                     options={accountOptions}
                                     onCreate={onCreateAccount}
@@ -130,11 +131,11 @@ export const TransactionForm = ({
                                 Category
                             </FormLabel>
                             <FormControl>
-                                <Select
+                                <CustomSelect
                                     placeholder="Select an category"
                                     options={categoryOptions}
                                     onCreate={onCreateCategory}
-                                    value={field.value}
+                                    value={field.value ?? undefined}
                                     onChange={field.onChange}
                                     disabled={disabled}
                                />

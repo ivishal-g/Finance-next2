@@ -1,8 +1,12 @@
+"use client";
+
 
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { client } from '@/lib/hono';
 import { convertAmountFromMiliunits } from '@/lib/utils';
+
+
 
 export const useGetSummary = () => {
     const params = useSearchParams();

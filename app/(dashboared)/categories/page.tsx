@@ -12,11 +12,6 @@ import { useNewCategory } from "@/features/categories/hooks/use-new-category";
 import { useBulkDeleteCategories } from "@/features/categories/api/use-bulk-delete-categories";
 import { useGetcategories } from "@/features/categories/api/use-get-categories";
 
-
-
-
-
-
 const CategoriesPage = () => {
     const newCatogory = useNewCategory();
     const categoriesQuery = useGetcategories();

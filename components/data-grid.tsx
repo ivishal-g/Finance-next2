@@ -6,8 +6,22 @@ import { useSearchParams } from "next/navigation";
 import { FaPiggyBank } from "react-icons/fa";
 import { DataCard, DataCardLoading } from "./data-card";
 import { FaArrowTrendDown, FaArrowTrendUp } from "react-icons/fa6"
+import { Suspense } from "react";
 
-export const DataGrid = () => {
+
+
+
+export function DataGrid() {
+  return (
+    // You could have a loading skeleton as the `fallback` too
+    <Suspense>
+      <DataGridclient />
+    </Suspense>
+  )
+}
+
+
+    const DataGridclient = () => {
     const { data, isLoading } = useGetSummary();
     const params = useSearchParams();
     const to = params.get("to") || undefined;

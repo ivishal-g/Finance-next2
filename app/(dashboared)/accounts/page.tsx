@@ -14,10 +14,19 @@ import { useBulkDeleteAccounts } from "@/features/accounts/api/use-bulk-delete-a
 
 
 
+import { Suspense } from 'react';
+
+export default function AccountsPage() {
+  return (
+    <Suspense fallback={<div>Loading accounts...</div>}>
+      <AccountsPageclient />
+    </Suspense>
+  );
+}
 
 
 
-const AccountsPage = () => {
+const AccountsPageclient = () => {
     const newAccount = useNewAccount();
     const accountsQuery = useGetAccounts();
     const accounts = accountsQuery.data || [];
@@ -75,4 +84,4 @@ const AccountsPage = () => {
     )
 }
 
-export default AccountsPage;
+
