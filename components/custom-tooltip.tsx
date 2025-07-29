@@ -2,12 +2,13 @@ import { format } from "date-fns";
 import { formateCurrency } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-export const CustomTooltip = ({ active, payload }: any) => {
-  if (!active || !payload || payload.length < 2) return null;
 
-  const date = payload[0]?.payload?.date;
-  const income = payload[0]?.value;
-  const expenses = payload[1]?.value;
+
+export const CustomTooltip = ({ active, pay }:any ) => {
+
+  const date = pay[0]?.pay?.date;
+  const income = pay[0]?.value;
+  const expenses = pay[1]?.value;
 
   return (
     <div className="rounded-sm bg-white shadow-sm border overflow-hidden">
