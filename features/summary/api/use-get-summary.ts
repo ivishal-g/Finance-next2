@@ -24,7 +24,7 @@ export const useGetSummary = () => {
 
 
             if(!response.ok) {  
-                throw new Error('Failed to fetch transactions');
+                throw new Error('Failed to fetch summary');
             }
 
             const { data } = await response.json();

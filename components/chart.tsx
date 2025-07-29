@@ -13,7 +13,7 @@ type Props = {
 };
 
 
-export const Chart = ( { data = [] }: Props) => {
+export const Chart = ({ data = [] }: Props) => {
 
     return (
             <Card className="border-none drop-shadow-sm">
