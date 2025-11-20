@@ -2,6 +2,44 @@ This is a personal finance dashboard built with [Next.js](https://nextjs.org) (A
 
 It uses Prisma + PostgreSQL for persistence and Clerk for authentication.
 
+## Key Features
+
+📊 Interactive financial dashboard
+
+🔁 Changeable chart types
+
+🗓 Account and date filters
+
+💹 Detailed transactions table
+
+➕ Form to add transactions
+
+🧩 Customizable select components
+
+💵 Income and expense toggle
+
+🔄 CSV transaction imports
+
+🔥 API via Hono.js
+
+🪝 State management via Tanstack React Query
+
+🔐 Authentication via Clerk (Core 2)
+
+🗑 Bulk delete and search in transactions
+
+⚙️ Bank disconnection and subscription management
+
+👤 User settings customization
+
+🌐 Built with Next.js 15 (App Router)
+
+🎨 Styled with TailwindCSS and Shadcn UI
+
+💾 PostgreSQL & Prisma ORM
+
+🚀 Deployed on Vercel
+
 ## Getting Started
 
 ### 1. Install dependencies
